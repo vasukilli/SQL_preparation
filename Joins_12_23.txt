@@ -1,0 +1,210 @@
+mysql> select * from customers;
++-------------+------------+-----------+------+---------+
+| customer_id | first_name | last_name | age  | country |
++-------------+------------+-----------+------+---------+
+|           1 | john       | doe       |   31 | usa     |
+|           2 | robert     | luna      |   22 | usa     |
+|           3 | david      | robinsion |   22 | uk      |
+|           4 | john       | reinhardt |   25 | uk      |
+|           5 | betty      | doe       |   28 | uae     |
++-------------+------------+-----------+------+---------+
+5 rows in set (0.00 sec)
+
+mysql> select * FROM orders;
++----------+----------+--------+-------------+
+| order_id | item     | amount | customer_id |
++----------+----------+--------+-------------+
+|        1 | keyboard |    400 |           4 |
+|        2 | mouse    |    300 |           4 |
+|        3 | monitor  |  12000 |           3 |
+|        4 | keyboard |    400 |           1 |
+|        5 | mousepad |    400 |           4 |
++----------+----------+--------+-------------+
+5 rows in set (0.04 sec)
+
+mysql> select * from shippings;
++-------------+-----------+----------+
+| shipping_id | status    | customer |
++-------------+-----------+----------+
+|           1 | pending   |        2 |
+|           2 | pending   |        4 |
+|           3 | delivered |        3 |
+|           4 | pending   |        5 |
+|           5 | delivered |        1 |
++-------------+-----------+----------+
+5 rows in set (0.02 sec)
+
+mysql> select customers.first_name,orders.amount,shippings.status from customers join orders,shippings on customers.customer_id = orders.order_id;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'on customers.customer_id
+= orders.order_id' at line 1
+mysql> select customers.first_name,orders.amount,shippings.status from customers join orders,shippings on customers.order_id = orders.order_id;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'on customers.order_id = o
+rders.order_id' at line 1
+mysql> select * from customers join orders on customers.customer_id=orders.order_id;
++-------------+------------+-----------+------+---------+----------+----------+--------+-------------+
+| customer_id | first_name | last_name | age  | country | order_id | item     | amount | customer_id |
++-------------+------------+-----------+------+---------+----------+----------+--------+-------------+
+|           1 | john       | doe       |   31 | usa     |        1 | keyboard |    400 |           4 |
+|           2 | robert     | luna      |   22 | usa     |        2 | mouse    |    300 |           4 |
+|           3 | david      | robinsion |   22 | uk      |        3 | monitor  |  12000 |           3 |
+|           4 | john       | reinhardt |   25 | uk      |        4 | keyboard |    400 |           1 |
+|           5 | betty      | doe       |   28 | uae     |        5 | mousepad |    400 |           4 |
++-------------+------------+-----------+------+---------+----------+----------+--------+-------------+
+5 rows in set (0.04 sec)
+
+mysql> desc customers;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| customer_id | int(20)     | NO   | PRI | NULL    |       |
+| first_name  | varchar(20) | YES  |     | NULL    |       |
+| last_name   | varchar(20) | YES  |     | NULL    |       |
+| age         | int(20)     | YES  |     | NULL    |       |
+| country     | varchar(20) | YES  |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+5 rows in set (0.08 sec)
+
+mysql> desc orders;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| order_id    | int(11)     | NO   | PRI | NULL    |       |
+| item        | varchar(20) | YES  |     | NULL    |       |
+| amount      | int(20)     | YES  |     | NULL    |       |
+| customer_id | int(20)     | YES  | MUL | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+4 rows in set (0.06 sec)
+
+mysql> select c.customer_id,c.first_name,c.last_name,c.age,o.order_id,o.item,o.amount from customer as c,orders as o join shippings on c.customer_id=o.order_id;
+ERROR 1146 (42S02): Table 'shop.customer' doesn't exist
+mysql> select c.customer_id,c.first_name,c.last_name,c.age,o.order_id,o.item,o.amount from customer as c join orders on c.customer_id=order.order_id;
+ERROR 1146 (42S02): Table 'shop.customer' doesn't exist
+mysql> select c.customer_id,c.first_name,c.last_name,c.age,orders.order_id,o.item,orders.amount from customers as c join orders on c.customer_id=orders.order_id;
+ERROR 1054 (42S22): Unknown column 'o.item' in 'field list'
+mysql> select c.customer_id,c.first_name,c.last_name,c.age,orders.order_id,orders.item,orders.amount from customers as c join orders on c.customer_id=orders.order_id;
++-------------+------------+-----------+------+----------+----------+--------+
+| customer_id | first_name | last_name | age  | order_id | item     | amount |
++-------------+------------+-----------+------+----------+----------+--------+
+|           1 | john       | doe       |   31 |        1 | keyboard |    400 |
+|           2 | robert     | luna      |   22 |        2 | mouse    |    300 |
+|           3 | david      | robinsion |   22 |        3 | monitor  |  12000 |
+|           4 | john       | reinhardt |   25 |        4 | keyboard |    400 |
+|           5 | betty      | doe       |   28 |        5 | mousepad |    400 |
++-------------+------------+-----------+------+----------+----------+--------+
+5 rows in set (0.00 sec)
+
+mysql> select * from orders as o join shippings as s on o.order_id=s.shipping_id;
++----------+----------+--------+-------------+-------------+-----------+----------+
+| order_id | item     | amount | customer_id | shipping_id | status    | customer |
++----------+----------+--------+-------------+-------------+-----------+----------+
+|        1 | keyboard |    400 |           4 |           1 | pending   |        2 |
+|        2 | mouse    |    300 |           4 |           2 | pending   |        4 |
+|        3 | monitor  |  12000 |           3 |           3 | delivered |        3 |
+|        4 | keyboard |    400 |           1 |           4 | pending   |        5 |
+|        5 | mousepad |    400 |           4 |           5 | delivered |        1 |
++----------+----------+--------+-------------+-------------+-----------+----------+
+5 rows in set (0.00 sec)
+
+mysql> select * from customers as c inner join orders as o,shippings as s on (c.customer_id=o.order_id) and (o.order_id = s.shipping_id);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'on (c.customer_id=o.order
+_id) and (o.order_id = s.shipping_id)' at line 1
+mysql> select * from customers as c inner join orders as o,shippings as s on (c.customer_id=o.order_id);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'on (c.customer_id=o.order
+_id)' at line 1
+mysql> select * from customers as c inner join orders as o,shippings as s on c.customer_id=o.order_id;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'on c.customer_id=o.order_
+id' at line 1
+mysql> select * from customers inner join shippings on shippings.shipping_id = customers.customer_id;
++-------------+------------+-----------+------+---------+-------------+-----------+----------+
+| customer_id | first_name | last_name | age  | country | shipping_id | status    | customer |
++-------------+------------+-----------+------+---------+-------------+-----------+----------+
+|           1 | john       | doe       |   31 | usa     |           1 | pending   |        2 |
+|           2 | robert     | luna      |   22 | usa     |           2 | pending   |        4 |
+|           3 | david      | robinsion |   22 | uk      |           3 | delivered |        3 |
+|           4 | john       | reinhardt |   25 | uk      |           4 | pending   |        5 |
+|           5 | betty      | doe       |   28 | uae     |           5 | delivered |        1 |
++-------------+------------+-----------+------+---------+-------------+-----------+----------+
+5 rows in set (0.01 sec)
+
+mysql> select * from customers as c inner join shippings as s on c.customer_id=s.shipping_id;
++-------------+------------+-----------+------+---------+-------------+-----------+----------+
+| customer_id | first_name | last_name | age  | country | shipping_id | status    | customer |
++-------------+------------+-----------+------+---------+-------------+-----------+----------+
+|           1 | john       | doe       |   31 | usa     |           1 | pending   |        2 |
+|           2 | robert     | luna      |   22 | usa     |           2 | pending   |        4 |
+|           3 | david      | robinsion |   22 | uk      |           3 | delivered |        3 |
+|           4 | john       | reinhardt |   25 | uk      |           4 | pending   |        5 |
+|           5 | betty      | doe       |   28 | uae     |           5 | delivered |        1 |
++-------------+------------+-----------+------+---------+-------------+-----------+----------+
+5 rows in set (0.00 sec)
+
+mysql> select * from customers as c inner join orders as o on o.order_id = c.customer_id inner join shippings as s on s.shipping_id = c.customer_id;
++-------------+------------+-----------+------+---------+----------+----------+--------+-------------+-------------+-----------+----------+
+| customer_id | first_name | last_name | age  | country | order_id | item     | amount | customer_id | shipping_id | status    | customer |
++-------------+------------+-----------+------+---------+----------+----------+--------+-------------+-------------+-----------+----------+
+|           1 | john       | doe       |   31 | usa     |        1 | keyboard |    400 |           4 |           1 | pending   |        2 |
+|           2 | robert     | luna      |   22 | usa     |        2 | mouse    |    300 |           4 |           2 | pending   |        4 |
+|           3 | david      | robinsion |   22 | uk      |        3 | monitor  |  12000 |           3 |           3 | delivered |        3 |
+|           4 | john       | reinhardt |   25 | uk      |        4 | keyboard |    400 |           1 |           4 | pending   |        5 |
+|           5 | betty      | doe       |   28 | uae     |        5 | mousepad |    400 |           4 |           5 | delivered |        1 |
++-------------+------------+-----------+------+---------+----------+----------+--------+-------------+-------------+-----------+----------+
+5 rows in set (0.00 sec)
+
+mysql> select c.customer_id,c.first_name,c.last_name,c.age,c.country,o.item,o.amount,s.status,s.customer from customers as c inner join on  orders as o c.customer_id = o.order_id i
+nner join shippings as s on s.shipping_id = c.customer_id;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'on  orders as o c.custome
+r_id = o.order_id inner join shippings as s on s.shippi' at line 1
+mysql> select c.customer_id,c.first_name,c.last_name,c.age,c.country,o.item,o.amount,s.status,s.customer from customers as c inner join orders as o on c.customer_id = o.order_id in
+ner join shippings as s on s.shipping_id = c.customer_id;
++-------------+------------+-----------+------+---------+----------+--------+-----------+----------+
+| customer_id | first_name | last_name | age  | country | item     | amount | status    | customer |
++-------------+------------+-----------+------+---------+----------+--------+-----------+----------+
+|           1 | john       | doe       |   31 | usa     | keyboard |    400 | pending   |        2 |
+|           2 | robert     | luna      |   22 | usa     | mouse    |    300 | pending   |        4 |
+|           3 | david      | robinsion |   22 | uk      | monitor  |  12000 | delivered |        3 |
+|           4 | john       | reinhardt |   25 | uk      | keyboard |    400 | pending   |        5 |
+|           5 | betty      | doe       |   28 | uae     | mousepad |    400 | delivered |        1 |
++-------------+------------+-----------+------+---------+----------+--------+-----------+----------+
+5 rows in set (0.00 sec)
+
+mysql> select sum(amount) from customers;
+ERROR 1054 (42S22): Unknown column 'amount' in 'field list'
+mysql> select sum(o.amount) from customers as c inner join orders as o on c.customer_id = o.order_id inner join shippings as s on s.shipping_id = c.customer_id;
++---------------+
+| sum(o.amount) |
++---------------+
+|         13500 |
++---------------+
+
+
+mysql> insert into orders values(6,'phone',300,5),(7,'iphone',450,6),(8,'samsang',10000,7),(9,'iqoo',3224,2),(10,'realme',5467,3);
+ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`shop`.`orders`, CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers`
+ (`customer_id`))
+mysql>
+mysql> select * from customers
+    -> left join orders as o
+    -> on o.order_id=customers.customer_id;
++-------------+------------+-----------+------+---------+----------+----------+--------+-------------+
+| customer_id | first_name | last_name | age  | country | order_id | item     | amount | customer_id |
++-------------+------------+-----------+------+---------+----------+----------+--------+-------------+
+|           1 | john       | doe       |   31 | usa     |        1 | keyboard |    400 |           4 |
+|           2 | robert     | luna      |   22 | usa     |        2 | mouse    |    300 |           4 |
+|           3 | david      | robinsion |   22 | uk      |        3 | monitor  |  12000 |           3 |
+|           4 | john       | reinhardt |   25 | uk      |        4 | keyboard |    400 |           1 |
+|           5 | betty      | doe       |   28 | uae     |        5 | mousepad |    400 |           4 |
++-------------+------------+-----------+------+---------+----------+----------+--------+-------------+
+5 rows in set (0.00 sec)
+
+mysql> select c.first_name,c.last_name,c.age,o.amount,o.customer_id from customers as c left join orders as o on o.order_id = c.customer_id;
++------------+-----------+------+--------+-------------+
+| first_name | last_name | age  | amount | customer_id |
++------------+-----------+------+--------+-------------+
+| john       | doe       |   31 |    400 |           4 |
+| robert     | luna      |   22 |    300 |           4 |
+| david      | robinsion |   22 |  12000 |           3 |
+| john       | reinhardt |   25 |    400 |           1 |
+| betty      | doe       |   28 |    400 |           4 |
++------------+-----------+------+--------+-------------+
+5 rows in set (0.00 sec)
+
+mysql>
