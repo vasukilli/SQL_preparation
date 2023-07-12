@@ -1,0 +1,180 @@
+mysql> select * from emp where datejoined like'%22';
++-------+-----------+-----------+--------+------------+------------+
+| empid | firstname | lastname  | salary | datejoined | department |
++-------+-----------+-----------+--------+------------+------------+
+|     2 | kolli     | tirupathi |  29949 | 16/4/2022  | h/w        |
++-------+-----------+-----------+--------+------------+------------+
+1 row in set (0.00 sec)
+
+mysql> select * from emp where salary >= 50000;
++-------+-----------+----------+----------+------------+------------+
+| empid | firstname | lastname | salary   | datejoined | department |
++-------+-----------+----------+----------+------------+------------+
+|     1 | killi     | vasu     | 10000000 | 15/2/2020  | s/w        |
+|     3 | vagadi    | kavaya   |    54664 | 24/5/2023  | s/w        |
++-------+-----------+----------+----------+------------+------------+
+2 rows in set (0.00 sec)
+
+mysql> insert into emp values(4,'patnay','raaju',1007686,'11/12/2002','govt'),(5,'jahar','umapathi',56666,'1/5/1999','pvt'),(6,'maddili','sivani',5465666,'19/03/2002','google');
+Query OK, 3 rows affected (0.04 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> select * from emp;
++-------+-----------+-----------+----------+------------+------------+
+| empid | firstname | lastname  | salary   | datejoined | department |
++-------+-----------+-----------+----------+------------+------------+
+|     1 | killi     | vasu      | 10000000 | 15/2/2020  | s/w        |
+|     2 | kolli     | tirupathi |    29949 | 16/4/2022  | h/w        |
+|     3 | vagadi    | kavaya    |    54664 | 24/5/2023  | s/w        |
+|     4 | patnay    | raaju     |  1007686 | 11/12/2002 | govt       |
+|     5 | jahar     | umapathi  |    56666 | 1/5/1999   | pvt        |
+|     6 | maddili   | sivani    |  5465666 | 19/03/2002 | google     |
++-------+-----------+-----------+----------+------------+------------+
+6 rows in set (0.00 sec)
+
+mysql> select firstname "home_name" from emp;
++-----------+
+| home_name |
++-----------+
+| killi     |
+| kolli     |
+| vagadi    |
+| patnay    |
+| jahar     |
+| maddili   |
++-----------+
+6 rows in set (0.00 sec)
+
+mysql> select * from emp;
++-------+-----------+-----------+----------+------------+------------+
+| empid | firstname | lastname  | salary   | datejoined | department |
++-------+-----------+-----------+----------+------------+------------+
+|     1 | killi     | vasu      | 10000000 | 15/2/2020  | s/w        |
+|     2 | kolli     | tirupathi |    29949 | 16/4/2022  | h/w        |
+|     3 | vagadi    | kavaya    |    54664 | 24/5/2023  | s/w        |
+|     4 | patnay    | raaju     |  1007686 | 11/12/2002 | govt       |
+|     5 | jahar     | umapathi  |    56666 | 1/5/1999   | pvt        |
+|     6 | maddili   | sivani    |  5465666 | 19/03/2002 | google     |
++-------+-----------+-----------+----------+------------+------------+
+6 rows in set (0.00 sec)
+
+mysql> select * firstname as home_name from emp;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'firstname as home_name fr
+om emp' at line 1
+mysql> select empid,firstname +,+lastname+,+salary+,+datejoined+,+department as emp_details;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '+lastname+,+salary+,+date
+joined+,+department as emp_details' at line 1
+mysql> select empid,firstname +','+lastname+','+salary+','+datejoined+','+department as emp_details;
+ERROR 1054 (42S22): Unknown column 'empid' in 'field list'
+mysql> select empid,firstname +','+lastname+','+salary+','+datejoined+','+department as emp_details;
+ERROR 1054 (42S22): Unknown column 'empid' in 'field list'
+mysql> select empid,firstname +','+lastname+','+salary+','+datejoined+','+department as emp_details from emp;
++-------+-------------+
+| empid | emp_details |
++-------+-------------+
+|     1 |    10000015 |
+|     2 |       29965 |
+|     3 |       54688 |
+|     4 |     1007697 |
+|     5 |       56667 |
+|     6 |     5465685 |
++-------+-------------+
+6 rows in set, 48 warnings (0.03 sec)
+
+mysql> select emp_details from emp;
+ERROR 1054 (42S22): Unknown column 'emp_details' in 'field list'
+mysql> select firstname,lastname as name from emp;
++-----------+-----------+
+| firstname | name      |
++-----------+-----------+
+| killi     | vasu      |
+| kolli     | tirupathi |
+| vagadi    | kavaya    |
+| patnay    | raaju     |
+| jahar     | umapathi  |
+| maddili   | sivani    |
++-----------+-----------+
+6 rows in set (0.03 sec)
+
+mysql> select * from emp;
++-------+-----------+-----------+----------+------------+------------+
+| empid | firstname | lastname  | salary   | datejoined | department |
++-------+-----------+-----------+----------+------------+------------+
+|     1 | killi     | vasu      | 10000000 | 15/2/2020  | s/w        |
+|     2 | kolli     | tirupathi |    29949 | 16/4/2022  | h/w        |
+|     3 | vagadi    | kavaya    |    54664 | 24/5/2023  | s/w        |
+|     4 | patnay    | raaju     |  1007686 | 11/12/2002 | govt       |
+|     5 | jahar     | umapathi  |    56666 | 1/5/1999   | pvt        |
+|     6 | maddili   | sivani    |  5465666 | 19/03/2002 | google     |
++-------+-----------+-----------+----------+------------+------------+
+6 rows in set (0.02 sec)
+
+mysql> select e.firstname,e.lastname,e.salary from emp as e where e.firstname ='maddili';
++-----------+----------+---------+
+| firstname | lastname | salary  |
++-----------+----------+---------+
+| maddili   | sivani   | 5465666 |
++-----------+----------+---------+
+1 row in set (0.04 sec)
+
+mysql> select e.empid,e.firstname,e.lastname,e.salary,e.datejoined,e.department from emp as e where empid>=1 lastname order by desc;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'lastname order by desc' a
+t line 1
+mysql> select e.empid,e.firstname,e.lastname,e.salary,e.datejoined,e.department from emp as e where empid>=1;
++-------+-----------+-----------+----------+------------+------------+
+| empid | firstname | lastname  | salary   | datejoined | department |
++-------+-----------+-----------+----------+------------+------------+
+|     1 | killi     | vasu      | 10000000 | 15/2/2020  | s/w        |
+|     2 | kolli     | tirupathi |    29949 | 16/4/2022  | h/w        |
+|     3 | vagadi    | kavaya    |    54664 | 24/5/2023  | s/w        |
+|     4 | patnay    | raaju     |  1007686 | 11/12/2002 | govt       |
+|     5 | jahar     | umapathi  |    56666 | 1/5/1999   | pvt        |
+|     6 | maddili   | sivani    |  5465666 | 19/03/2002 | google     |
++-------+-----------+-----------+----------+------------+------------+
+6 rows in set (0.00 sec)
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| evoting            |
+| heroes             |
+| mysql              |
+| performance_schema |
+| ramanujan4         |
+| shop               |
+| vasu_database      |
++--------------------+
+8 rows in set (0.03 sec)
+
+mysql> desc customes;
+ERROR 1146 (42S02): Table 'ramanujan4.customes' doesn't exist
+mysql> desc customers;
+ERROR 1146 (42S02): Table 'ramanujan4.customers' doesn't exist
+mysql> use shop;
+Database changed
+mysql> desc customers;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| customer_id | int(20)     | NO   | PRI | NULL    |       |
+| first_name  | varchar(20) | YES  |     | NULL    |       |
+| last_name   | varchar(20) | YES  |     | NULL    |       |
+| age         | int(20)     | YES  |     | NULL    |       |
+| country     | varchar(20) | YES  |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+5 rows in set (0.04 sec)
+
+mysql> desc orders;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| order_id    | int(11)     | NO   | PRI | NULL    |       |
+| item        | varchar(20) | YES  |     | NULL    |       |
+| amount      | int(20)     | YES  |     | NULL    |       |
+| customer_id | int(20)     | YES  | MUL | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+4 rows in set (0.04 sec)
+
+mysql>
