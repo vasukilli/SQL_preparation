@@ -1,0 +1,180 @@
+mysql> select * from orders;
++----------+----------+--------+-------------+
+| order_id | item     | amount | customer_id |
++----------+----------+--------+-------------+
+|        1 | keyboard |    400 |           4 |
+|        2 | mouse    |    300 |           4 |
+|        3 | monitor  |  12000 |           3 |
+|        4 | keyboard |    400 |           1 |
+|        5 | mousepad |    400 |           4 |
++----------+----------+--------+-------------+
+5 rows in set (0.04 sec)
+
+mysql> select * from shippings;
++-------------+-----------+----------+
+| shipping_id | status    | customer |
++-------------+-----------+----------+
+|           1 | pending   |        2 |
+|           2 | pending   |        4 |
+|           3 | delivered |        3 |
+|           4 | pending   |        5 |
+|           5 | delivered |        1 |
++-------------+-----------+----------+
+5 rows in set (0.04 sec)
+
+mysql> select * from customers as c inner join orders as o on c.customer_id = o.order_id;
++-------------+------------+-----------+------+---------+----------+----------+--------+-------------+
+| customer_id | first_name | last_name | age  | country | order_id | item     | amount | customer_id |
++-------------+------------+-----------+------+---------+----------+----------+--------+-------------+
+|           1 | john       | doe       |   31 | usa     |        1 | keyboard |    400 |           4 |
+|           2 | robert     | luna      |   22 | usa     |        2 | mouse    |    300 |           4 |
+|           3 | david      | robinsion |   22 | uk      |        3 | monitor  |  12000 |           3 |
+|           4 | john       | reinhardt |   25 | uk      |        4 | keyboard |    400 |           1 |
+|           5 | betty      | doe       |   28 | uae     |        5 | mousepad |    400 |           4 |
++-------------+------------+-----------+------+---------+----------+----------+--------+-------------+
+5 rows in set (0.03 sec)
+
+mysql> select * from customers as c left join orders as o on o.order_id = c.customer_id;
++-------------+------------+-----------+------+---------+----------+----------+--------+-------------+
+| customer_id | first_name | last_name | age  | country | order_id | item     | amount | customer_id |
++-------------+------------+-----------+------+---------+----------+----------+--------+-------------+
+|           1 | john       | doe       |   31 | usa     |        1 | keyboard |    400 |           4 |
+|           2 | robert     | luna      |   22 | usa     |        2 | mouse    |    300 |           4 |
+|           3 | david      | robinsion |   22 | uk      |        3 | monitor  |  12000 |           3 |
+|           4 | john       | reinhardt |   25 | uk      |        4 | keyboard |    400 |           1 |
+|           5 | betty      | doe       |   28 | uae     |        5 | mousepad |    400 |           4 |
++-------------+------------+-----------+------+---------+----------+----------+--------+-------------+
+5 rows in set (0.00 sec)
+
+mysql> select * from shippings as s right join customers as c on s.shipping_id =c.customer_id;
++-------------+-----------+----------+-------------+------------+-----------+------+---------+
+| shipping_id | status    | customer | customer_id | first_name | last_name | age  | country |
++-------------+-----------+----------+-------------+------------+-----------+------+---------+
+|           1 | pending   |        2 |           1 | john       | doe       |   31 | usa     |
+|           2 | pending   |        4 |           2 | robert     | luna      |   22 | usa     |
+|           3 | delivered |        3 |           3 | david      | robinsion |   22 | uk      |
+|           4 | pending   |        5 |           4 | john       | reinhardt |   25 | uk      |
+|           5 | delivered |        1 |           5 | betty      | doe       |   28 | uae     |
++-------------+-----------+----------+-------------+------------+-----------+------+---------+
+5 rows in set (0.00 sec)
+
+mysql> select count(c.age) from shippings ;
+ERROR 1054 (42S22): Unknown column 'c.age' in 'field list'
+mysql> select count(c.age) from shippings right join customers as c on s.shipping_id=c.customer_id;
+ERROR 1054 (42S22): Unknown column 's.shipping_id' in 'on clause'
+mysql> select count(c.age) from shippings as s right join customers as c on s.shipping_id=c.customer_id;
++--------------+
+| count(c.age) |
++--------------+
+|            5 |
++--------------+
+1 row in set (0.00 sec)
+
+mysql> select sum(s.customer) from shippings as s right join customers as c on c.customer_id = s.shipping_id;
++-----------------+
+| sum(s.customer) |
++-----------------+
+|              15 |
++-----------------+
+1 row in set (0.02 sec)
+
+mysql> select * from customers as c inner join orders as o on c.customer_id = o.order_id , inner join shippings as s on s.shipping_id=c.customer_id;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'inner join shippings as s
+ on s.shipping_id=c.customer_id' at line 1
+mysql> select * from customers as c inner join orders as o on c.customer_id = o.order_id inner join shippings as s on s.shipping_id=c.customer_id;
++-------------+------------+-----------+------+---------+----------+----------+--------+-------------+-------------+-----------+----------+
+| customer_id | first_name | last_name | age  | country | order_id | item     | amount | customer_id | shipping_id | status    | customer |
++-------------+------------+-----------+------+---------+----------+----------+--------+-------------+-------------+-----------+----------+
+|           1 | john       | doe       |   31 | usa     |        1 | keyboard |    400 |           4 |           1 | pending   |        2 |
+|           2 | robert     | luna      |   22 | usa     |        2 | mouse    |    300 |           4 |           2 | pending   |        4 |
+|           3 | david      | robinsion |   22 | uk      |        3 | monitor  |  12000 |           3 |           3 | delivered |        3 |
+|           4 | john       | reinhardt |   25 | uk      |        4 | keyboard |    400 |           1 |           4 | pending   |        5 |
+|           5 | betty      | doe       |   28 | uae     |        5 | mousepad |    400 |           4 |           5 | delivered |        1 |
++-------------+------------+-----------+------+---------+----------+----------+--------+-------------+-------------+-----------+----------+
+5 rows in set (0.00 sec)
+
+mysql> select * from c;
+ERROR 1146 (42S02): Table 'shop.c' doesn't exist
+mysql> select * from customers;
++-------------+------------+-----------+------+---------+
+| customer_id | first_name | last_name | age  | country |
++-------------+------------+-----------+------+---------+
+|           1 | john       | doe       |   31 | usa     |
+|           2 | robert     | luna      |   22 | usa     |
+|           3 | david      | robinsion |   22 | uk      |
+|           4 | john       | reinhardt |   25 | uk      |
+|           5 | betty      | doe       |   28 | uae     |
++-------------+------------+-----------+------+---------+
+5 rows in set (0.00 sec)
+
+mysql> select c.customer_id,o.order_id,s.shipping_id,sum(c.age),sum(o.amount) from customers as c inner join orders as o on c.customer_id=o.order_id inner join shippings as s on s.
+shipping_id = c.customer_id;
++-------------+----------+-------------+------------+---------------+
+| customer_id | order_id | shipping_id | sum(c.age) | sum(o.amount) |
++-------------+----------+-------------+------------+---------------+
+|           1 |        1 |           1 |        128 |         13500 |
++-------------+----------+-------------+------------+---------------+
+1 row in set (0.01 sec)
+
+mysql> select * from customers as c inner join orders as o on c.customer_id=o.order_id inner join shippings as s on s.shipping_id=c.customer_id where c.last_name = 'doe' and o.item
+='keyboard';
++-------------+------------+-----------+------+---------+----------+----------+--------+-------------+-------------+---------+----------+
+| customer_id | first_name | last_name | age  | country | order_id | item     | amount | customer_id | shipping_id | status  | customer |
++-------------+------------+-----------+------+---------+----------+----------+--------+-------------+-------------+---------+----------+
+|           1 | john       | doe       |   31 | usa     |        1 | keyboard |    400 |           4 |           1 | pending |        2 |
++-------------+------------+-----------+------+---------+----------+----------+--------+-------------+-------------+---------+----------+
+1 row in set (0.00 sec)
+
+mysql> select * from customers as c full join orders as o on c.customer_id = o.order_id;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'full join orders as o on
+c.customer_id = o.order_id' at line 1
+mysql> select * from customers as c full outer join orders as o on c.customer_id = o.order_id;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'full outer join orders as
+ o on c.customer_id = o.order_id' at line 1
+mysql> select c.customer_id,c.first_name from customers as c full outer join orders as o on c.customer_id = o.order_id;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'full outer join orders as
+ o on c.customer_id = o.order_id' at line 1
+mysql> select * from customers;
++-------------+------------+-----------+------+---------+
+| customer_id | first_name | last_name | age  | country |
++-------------+------------+-----------+------+---------+
+|           1 | john       | doe       |   31 | usa     |
+|           2 | robert     | luna      |   22 | usa     |
+|           3 | david      | robinsion |   22 | uk      |
+|           4 | john       | reinhardt |   25 | uk      |
+|           5 | betty      | doe       |   28 | uae     |
++-------------+------------+-----------+------+---------+
+5 rows in set (0.00 sec)
+
+mysql> select A.customer_id,B.country,A.last_name,B.age from customers as A,customers as B where B.age<>A.age;
++-------------+---------+-----------+------+
+| customer_id | country | last_name | age  |
++-------------+---------+-----------+------+
+|           2 | usa     | luna      |   31 |
+|           3 | usa     | robinsion |   31 |
+|           4 | usa     | reinhardt |   31 |
+|           5 | usa     | doe       |   31 |
+|           1 | usa     | doe       |   22 |
+|           4 | usa     | reinhardt |   22 |
+|           5 | usa     | doe       |   22 |
+|           1 | uk      | doe       |   22 |
+|           4 | uk      | reinhardt |   22 |
+|           5 | uk      | doe       |   22 |
+|           1 | uk      | doe       |   25 |
+|           2 | uk      | luna      |   25 |
+|           3 | uk      | robinsion |   25 |
+|           5 | uk      | doe       |   25 |
+|           1 | uae     | doe       |   28 |
+|           2 | uae     | luna      |   28 |
+|           3 | uae     | robinsion |   28 |
+|           4 | uae     | reinhardt |   28 |
++-------------+---------+-----------+------+
+18 rows in set (0.02 sec)
+
+mysql> SELECT DISTINCT(A.CUSTOMER_ID,B.COUNTRY,A.LAST_NAME,B.AGE) FROM CUSTOMERS AS A,CUSTOMERS AS B;
+ERROR 1241 (21000): Operand should contain 1 column(s)
+mysql> SELECT DISTINCT(A.CUSTOMER_ID,B.COUNTRY,A.LAST_NAME,B.AGE) FROM CUSTOMERS AS A,CUSTOMERS AS B WHERE B.AGE<>A.AGE;
+ERROR 1241 (21000): Operand should contain 1 column(s)
+mysql> SELECT DISTINCT(A.customer_id,B.country,A.last_name,B.age) FROM customers AS A,customers AS B WHERE B.age<>A.age;
+ERROR 1241 (21000): Operand should contain 1 column(s)
+mysql>
